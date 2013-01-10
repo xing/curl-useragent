@@ -167,15 +167,13 @@ sub _wait_for_response {
     my $curl_multi = $self->_curl_multi;
 
     while ( $curl_multi->perform == $active_handlers ) {
-        my ( $read, $write, $exception ) = $curl_multi->fdset;
-        if ( my @read = @{$read} ) {
+        Time::HiRes::nanosleep(1);
+        my @select = map {
             my $s = IO::Select->new;
-            $s->add(@read);
-            $s->can_read(.1);
-        }
-        else {
-            Time::HiRes::nanosleep(1);
-        }
+            $s->add( @{$_} );
+            $s;
+        } ( $curl_multi->fdset );
+        IO::Select->select( @select, 0.1 );
     }
 }
 
