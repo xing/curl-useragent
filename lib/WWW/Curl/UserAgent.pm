@@ -46,7 +46,7 @@ has keep_alive => (
 has user_agent_string => (
     is      => 'rw',
     isa     => 'Str',
-    default => sub {'www.curl.useragent/0.9.0'},
+    default => sub { "www.curl.useragent/$WWW::Curl::UserAgent::VERSION" },
 );
 
 has _curl_multi => (
@@ -321,7 +321,7 @@ The following options correspond to attribute methods described below:
 
     KEY                     DEFAULT
     -----------             --------------------
-    user_agent_string       "www.curl.useragent/0.9.0"
+    user_agent_string       www.curl.useragent/$VERSION
     connect_timeout         300
     timeout                 0
     parallel_requests       5

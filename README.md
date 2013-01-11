@@ -68,7 +68,7 @@ The following constructor methods are available:
 
         KEY                     DEFAULT
         -----------             --------------------
-        user_agent_string       "www.curl.useragent/0.9.0"
+        user_agent_string       www.curl.useragent/$VERSION
         connect_timeout         300
         timeout                 0
         parallel_requests       5
