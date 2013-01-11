@@ -306,6 +306,8 @@ when the responses arrive beginning with the first received response. The
 simple method request() does not support this of course, because there are no
 callbacks defined.
 
+This library is in production use on L<https://www.xing.com>.
+
 =head1 CONSTRUCTOR METHODS
 
 The following constructor methods are available:

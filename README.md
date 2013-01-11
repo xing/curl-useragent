@@ -55,6 +55,8 @@ when the responses arrive beginning with the first received response. The
 simple method request() does not support this of course, because there are no
 callbacks defined.
 
+This library is in production use on [https://www.xing.com](https://www.xing.com).
+
 # CONSTRUCTOR METHODS
 
 The following constructor methods are available:
