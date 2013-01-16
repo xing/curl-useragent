@@ -1,28 +1,29 @@
 use strict;
 use warnings;
 
+use FindBin;
+use lib "$FindBin::Bin/lib", "$FindBin::Bin/../lib";
+
 use HTTP::Request;
 use Test::More tests => 28;
+use Test::Webserver;
 
 BEGIN {
     use_ok('WWW::Curl::UserAgent');
 }
 
-my $url = 'http://www.google.de/';
+Test::Webserver->start;
+
+my $url = 'http://localhost:3000/code/204';
 
 {
     note 'request methods';
 
     my $ua = WWW::Curl::UserAgent->new;
 
-    foreach my $method (qw/GET HEAD/) {
+    foreach my $method (qw/GET HEAD PUT POST DELETE/) {
         my $res = $ua->request( HTTP::Request->new( HEAD => $url ) );
         ok $res->is_success, "$method request to '$url'";
-    }
-
-    foreach my $method (qw/PUT POST DELETE/) {
-        my $res = $ua->request( HTTP::Request->new( $method => $url ) );
-        is $res->code, 405, "$method request to '$url'";
     }
 }
 
@@ -31,25 +32,12 @@ my $url = 'http://www.google.de/';
 
     my $ua = WWW::Curl::UserAgent->new;
 
-    foreach my $method (qw/GET HEAD/) {
+    foreach my $method (qw/GET HEAD PUT POST DELETE/) {
         $ua->add_request(
             request    => HTTP::Request->new( $method => $url ),
             on_success => sub {
                 my ( $req, $res ) = @_;
                 ok $res->is_success, "$method request to '$url'";
-            },
-            on_failure => sub {
-                my ( $req, $err, $err_desc ) = @_;
-                fail "$err: $err_desc";
-            }
-        ) for ( 1 .. 2 );
-    }
-    foreach my $method (qw/PUT POST DELETE/) {
-        $ua->add_request(
-            request    => HTTP::Request->new( $method => $url ),
-            on_success => sub {
-                my ( $req, $res ) = @_;
-                is $res->code, 405, "$method request to '$url'";
             },
             on_failure => sub {
                 my ( $req, $err, $err_desc ) = @_;
@@ -148,3 +136,5 @@ my $url = 'http://www.google.de/';
     );
     $ua->perform;
 }
+
+Test::Webserver->stop
