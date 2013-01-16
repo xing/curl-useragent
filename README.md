@@ -27,7 +27,7 @@ version 0.9.2
                 die $response->status_line;
             }
         },
-        on_failue  => sub {
+        on_failure => sub {
             my ( $request, $error_msg, $error_desc ) = @_;
             die "$error_msg: $error_desc";
         },
