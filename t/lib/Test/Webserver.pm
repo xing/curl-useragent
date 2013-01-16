@@ -1,11 +1,22 @@
 package Test::Webserver;
 
 use IO::Scalar;
-use Dancer qw/any status params/;
+use Dancer qw/any get status params header/;
 use Daemon::Daemonize qw//;
 
 any [ 'get', 'put', 'post', 'delete' ] => '/code/:code' => sub {
     status int params->{code};
+};
+
+get '/redirect/:times' => sub {
+    my $times = int params->{times};
+    if ($times) {
+        header Location => 'http://localhost:3000/redirect/' . ( $times - 1 );
+        status 301;
+    }
+    else {
+        status 204;
+    }
 };
 
 my $pid = "$0.pid";

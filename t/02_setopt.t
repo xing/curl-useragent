@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib", "$FindBin::Bin/../lib";
 
-use Test::More tests => 20;
+use Test::More tests => 22;
 
 use HTTP::Request;
 use Sub::Override;
@@ -27,6 +27,8 @@ BEGIN {
     is $curlopt{WWW::Curl::Easy::CURLOPT_TIMEOUT_MS},        7,       'timeout';
     is $curlopt{WWW::Curl::Easy::CURLOPT_URL},               'dummy', 'url';
     is $curlopt{WWW::Curl::Easy::CURLOPT_FORBID_REUSE},      1,       'no keep-alive';
+    is $curlopt{WWW::Curl::Easy::CURLOPT_FOLLOWLOCATION},    1,       'follow redirects';
+    is $curlopt{WWW::Curl::Easy::CURLOPT_MAXREDIRS},         10,      'maximum of redirects';
     is_deeply $curlopt{WWW::Curl::Easy::CURLOPT_HTTPHEADER}, [ 'X-Foo: bar', 'Connection: close' ], 'http header';
 }
 
@@ -91,6 +93,8 @@ sub request {
         connect_timeout => 6,
         timeout         => 7,
         keep_alive      => 0,
+        followlocation  => 1,
+        max_redirects   => 10,
     )->curl_easy;
 
     my %curlopt;

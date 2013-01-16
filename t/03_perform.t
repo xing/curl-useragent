@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib", "$FindBin::Bin/../lib";
 
-use Test::More tests => 22;
+use Test::More tests => 25;
 
 use HTTP::Request;
 use Sub::Override;
@@ -143,6 +143,25 @@ EOF
     is $response->message, 'No Content';
     is $response->content, '';
 }
+
+{
+    note 'mixed header with redirect';
+
+    my $http_response_header = <<EOF;
+HTTP/1.1 301 Redirect\r\n\r
+HTTP/1.0 301 Redirect\r\n\r
+HTTP/1.0 204 No Content\r
+Content-Length: 0\r
+Content-Type: text/html\r
+\r
+EOF
+
+    my $response = WWW::Curl::UserAgent->_build_http_response($http_response_header, undef);
+    is $response->code, 204;
+    is $response->message, 'No Content';
+    is $response->content, '';
+}
+
 
 sub get_activating_ua {
     my $ua = WWW::Curl::UserAgent->new;

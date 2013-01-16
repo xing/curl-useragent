@@ -5,7 +5,7 @@ use FindBin;
 use lib "$FindBin::Bin/lib", "$FindBin::Bin/../lib";
 
 use HTTP::Request;
-use Test::More tests => 28;
+use Test::More tests => 32;
 use Test::Webserver;
 
 BEGIN {
@@ -22,7 +22,7 @@ my $url = 'http://localhost:3000/code/204';
     my $ua = WWW::Curl::UserAgent->new;
 
     foreach my $method (qw/GET HEAD PUT POST DELETE/) {
-        my $res = $ua->request( HTTP::Request->new( HEAD => $url ) );
+        my $res = $ua->request( HTTP::Request->new( $method => $url ) );
         ok $res->is_success, "$method request to '$url'";
     }
 }
@@ -133,6 +133,55 @@ my $url = 'http://localhost:3000/code/204';
             is $err,      'Timeout was reached';
             ok $err_desc, $err_desc;
         }
+    );
+    $ua->perform;
+}
+
+{
+    note 'test redirect disabled';
+
+    my $ua = WWW::Curl::UserAgent->new;
+    $ua->add_request(
+        request         => HTTP::Request->new( GET => 'http://localhost:3000/redirect/1' ),
+        on_failure      => sub { fail },
+        on_success      => sub {
+            my ( $req, $res ) = @_;
+            is $res->code, 301, 'automatic redirect disabled';
+        }
+    );
+    $ua->perform;
+}
+
+{
+    note 'test redirect enabled';
+
+    my $ua = WWW::Curl::UserAgent->new;
+    $ua->add_request(
+        followlocation  => 1,
+        request         => HTTP::Request->new( GET => 'http://localhost:3000/redirect/1' ),
+        on_failure      => sub { fail },
+        on_success      => sub {
+            my ( $req, $res ) = @_;
+            is $res->code, 204, 'automatic redirect enabled';
+        }
+    );
+    $ua->perform;
+}
+
+{
+    note 'test redirect error';
+
+    my $ua = WWW::Curl::UserAgent->new;
+    $ua->add_request(
+        followlocation  => 1,
+        max_redirects   => 1,
+        request         => HTTP::Request->new( GET => 'http://localhost:3000/redirect/10' ),
+        on_success      => sub { fail },
+        on_failure      => sub {
+            my ( $req, $err, $err_desc ) = @_;
+            is $err,      'Number of redirects hit maximum amount';
+            ok $err_desc, $err_desc;
+        },
     );
     $ua->perform;
 }

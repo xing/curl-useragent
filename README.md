@@ -75,6 +75,8 @@ The following constructor methods are available:
         timeout                 0
         parallel_requests       5
         keep_alive              1
+        followlocation          0
+        max_redirects           -1
 
 # ATTRIBUTES
 
@@ -100,6 +102,18 @@ The following constructor methods are available:
     corresponding header "Connection: close" is set. If keep-alive is enabled
     (default) libcurl will handle the connections.
 
+- $ua->followlocation / $ua->followlocation($boolean)
+
+    Get/set if curl should follow redirects. The headers of the redirect respones
+    are thrown away while redirecting, so that the final response will be passed
+    into the corresponding handler.
+
+- $ua->max\_redirects / $ua->max\_redirects($max\_redirects)
+
+    Get/set the maximum amount of redirects. -1 (default) means infinite redirects.
+    0 means no redirects at all. If the maximum redirect is reached the on\_failure
+    handler will be called.
+
 - $ua->user\_agent\_string / $ua->user\_agent\_string($user\_agent)
 
     Get/set the user agent submitted in each request.
@@ -117,6 +131,8 @@ The following constructor methods are available:
         connect_timeout
         timeout
         keep_alive
+        followlocation
+        max_redirects
 
     Some examples for a request
 
@@ -140,7 +156,8 @@ The following constructor methods are available:
     containing error codes. The on\_failure handler will be called when libcurl
     reports errors, e.g. timeouts or bad curl settings. The parameters
     `request`, `on_success` and `on_failure` are mandatory. Optional are
-    `timeout`, `connect_timeout` and `keep_alive`.
+    `timeout`, `connect_timeout`, `keep_alive`, `followlocation` and
+    `max_redirects`.
 
         $ua->add_request(
             request    => HTTP::Request->new('http://search.cpan.org/'),
@@ -206,6 +223,8 @@ The following constructor methods are available:
                 connect_timeout => $ua->connect_timeout,
                 timeout         => $ua->timeout,
                 keep_alive      => $ua->keep_alive,
+                followlocation  => $ua->followlocation,
+                max_redirects   => $ua->max_redirects,
             ),
         );
 
