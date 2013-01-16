@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 13;
+use Test::More tests => 22;
 
 use HTTP::Request;
 use Sub::Override;
@@ -88,7 +88,58 @@ BEGIN {
     is $ua->request_queue_size,   1, 'one handler left to activate';
 }
 
-# TODO: _perform_callbacks, _activate_handler, _build_http_response
+# TODO: _perform_callbacks, _activate_handler
+
+{
+    note 'build default http no content response';
+
+    my $http_response_header = <<EOF;
+HTTP/1.0 204 No Content\r
+Content-Length: 0\r
+Content-Type: text/html\r
+\r
+EOF
+    
+    my $response = WWW::Curl::UserAgent->_build_http_response($http_response_header, undef);
+    is $response->code, 204;
+    is $response->message, 'No Content';
+    is $response->content, '';
+}
+
+{
+    note 'build default http response';
+
+    my $http_response_header = <<EOF;
+HTTP/1.1 200 OK\r
+Content-Length: 12\r
+Content-Type: text/plain\r
+\r
+EOF
+    my $http_response_body = 'some content';
+    
+    my $response = WWW::Curl::UserAgent->_build_http_response($http_response_header, $http_response_body);
+    is $response->code, 200;
+    is $response->message, 'OK';
+    is $response->content, $http_response_body;
+}
+
+{
+    note 'mixed header with continue';
+
+    my $http_response_header = <<EOF;
+HTTP/1.1 100 Continue\r\n\r
+HTTP/1.0 100 Continue\r\n\r
+HTTP/1.0 204 No Content\r
+Content-Length: 0\r
+Content-Type: text/html\r
+\r
+EOF
+
+    my $response = WWW::Curl::UserAgent->_build_http_response($http_response_header, undef);
+    is $response->code, 204;
+    is $response->message, 'No Content';
+    is $response->content, '';
+}
 
 sub get_activating_ua {
     my $ua = WWW::Curl::UserAgent->new;

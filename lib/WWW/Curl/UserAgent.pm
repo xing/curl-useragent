@@ -238,9 +238,9 @@ sub _build_http_response {
     my $content = shift;
 
     # PUT requests may contain continue header
-    while ( $header =~ s/^HTTP\/1.1 100 Continue\r\n\r\n// ) { }
+    my @header = split "\r\n\r\n", $header;
 
-    my $response = HTTP::Response->parse($header);
+    my $response = HTTP::Response->parse($header[-1]);
     $response->content($content) if defined $content;
 
     # message might include a bad char
