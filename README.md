@@ -12,8 +12,8 @@ version 0.9.3
     use WWW::Curl::UserAgent;
 
     my $ua = WWW::Curl::UserAgent->new(
-        timeout         => 10,
-        connect_timeout => 1,
+        timeout         => 10000,
+        connect_timeout => 1000,
     );
 
     $ua->add_request(
@@ -140,7 +140,7 @@ The following constructor methods are available:
 
         $response = $ua->request($request);
         $response = $ua->request($request,
-            timeout    => 30,
+            timeout    => 3000,
             keep_alive => 0,
         );
 
