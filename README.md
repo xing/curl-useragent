@@ -4,7 +4,7 @@ WWW::Curl::UserAgent - UserAgent based on libcurl
 
 # VERSION
 
-version 0.9.3
+version 0.9.4
 
 # SYNOPSIS
 
