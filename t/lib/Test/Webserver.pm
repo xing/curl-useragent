@@ -8,6 +8,12 @@ any [ 'get', 'put', 'post', 'delete' ] => '/code/:code' => sub {
     status int params->{code};
 };
 
+get '/sleep/:time' => sub {
+    my $time = int params->{time};
+    sleep $time;
+    status 204;
+};
+
 get '/redirect/:times' => sub {
     my $times = int params->{times};
     if ($times) {

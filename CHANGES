@@ -1,3 +1,7 @@
+0.9.4
+    [ BUG FIXES ]
+    * move integration tests to release tests
+
 0.9.3
     [ ENHANCEMENTS ]
     * added configuration 'followlocation' to enable following redirects
