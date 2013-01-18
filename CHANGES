@@ -1,6 +1,7 @@
 0.9.4
     [ BUG FIXES ]
     * move integration tests to release tests
+    * ensure less dependencies for package building
 
 0.9.3
     [ ENHANCEMENTS ]
