@@ -1,7 +1,6 @@
 package Test::Webserver;
 
-use IO::Scalar;
-use Dancer qw/any get status params header/;
+use Dancer;
 use Daemon::Daemonize qw//;
 
 any [ 'get', 'put', 'post', 'delete' ] => '/code/:code' => sub {
@@ -33,7 +32,7 @@ sub start {
         run   => sub {
             Daemon::Daemonize->write_pidfile($pid);
             $SIG{TERM} = sub { Daemon::Daemonize->delete_pidfile($pid); exit };
-            Dancer->dance;
+            dance;
         }
     );
 }
