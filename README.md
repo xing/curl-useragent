@@ -17,7 +17,7 @@ version 0.9.5
     );
 
     $ua->add_request(
-        request    => HTTP::Request->new('http://search.cpan.org/'),
+        request    => HTTP::Request->new( GET => 'http://search.cpan.org/'),
         on_success => sub {
             my ( $request, $response ) = @_;
             if ($response->is_success) {
@@ -136,7 +136,7 @@ The following constructor methods are available:
 
     Some examples for a request
 
-        my $request = HTTP::Request->new('http://search.cpan.org/');
+        my $request = HTTP::Request->new( GET => 'http://search.cpan.org/');
 
         $response = $ua->request($request);
         $response = $ua->request($request,
@@ -160,7 +160,7 @@ The following constructor methods are available:
     `max_redirects`.
 
         $ua->add_request(
-            request    => HTTP::Request->new('http://search.cpan.org/'),
+            request    => HTTP::Request->new( GET => 'http://search.cpan.org/'),
             on_success => sub {
                 my ( $request, $response, $easy ) = @_;
                 print $request->as_string;
@@ -219,7 +219,7 @@ The following constructor methods are available:
                 # error handling
             }
             request    => WWW::Curl::UserAgent::Request->new(
-                http_request    => HTTP::Request->new('http://search.cpan.org/'),
+                http_request    => HTTP::Request->new( GET => 'http://search.cpan.org/'),
                 connect_timeout => $ua->connect_timeout,
                 timeout         => $ua->timeout,
                 keep_alive      => $ua->keep_alive,
