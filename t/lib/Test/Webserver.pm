@@ -32,7 +32,7 @@ any [ 'put', 'post' ] => '/content_md5' => sub {
 
 my $pid = "$0.pid";
 
-sub start {
+sub start_webserver_daemon {
     Daemon::Daemonize->daemonize(
         chdir => undef,
         run   => sub {
@@ -43,7 +43,7 @@ sub start {
     );
 }
 
-sub stop {
+sub stop_webserver_daemon {
     my $child_pid = Daemon::Daemonize->read_pidfile($pid);
     kill 15, $child_pid;
 }

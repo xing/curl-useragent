@@ -11,7 +11,7 @@ use Test::Webserver;
 use WWW::Curl::UserAgent;
 use Digest::MD5 qw(md5_hex);
 
-Test::Webserver->start;
+Test::Webserver->start_webserver_daemon;
 
 my $base_url = 'http://localhost:3000';
 
@@ -123,4 +123,4 @@ my $base_url = 'http://localhost:3000';
     is $res->content, $content_md5;
 }
 
-Test::Webserver->stop
+Test::Webserver->stop_webserver_daemon;
