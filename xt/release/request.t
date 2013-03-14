@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib", "$FindBin::Bin/../lib", "$FindBin::Bin/../../lib";
 
-use Test::More tests => 22;
+use Test::More tests => 24;
 
 use HTTP::Request;
 use Test::Webserver;
@@ -101,6 +101,21 @@ my $base_url = 'http://localhost:3000';
         }
     );
     $ua->perform;
+}
+
+{
+    note 'put with large body';
+
+    my $content = 'o' x 20_000;
+
+    my $request = HTTP::Request->new( PUT => "$base_url/content_length" );
+    $request->content($content);
+
+    my $ua = WWW::Curl::UserAgent->new;
+    my $res = $ua->request($request);
+
+    ok $res->is_success, "PUT request";
+    is $res->content, length($content);
 }
 
 Test::Webserver->stop

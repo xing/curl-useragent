@@ -24,6 +24,11 @@ get '/redirect/:times' => sub {
     }
 };
 
+any [ 'put', 'post' ] => '/content_length' => sub {
+    return length(request->body);
+};
+
+
 my $pid = "$0.pid";
 
 sub start {
