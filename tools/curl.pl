@@ -3,9 +3,6 @@
 use strict;
 use warnings;
 
-# use FindBin;
-# use lib "$FindBin::Bin/../WWW-Curl-UserAgent-0.9.2/lib";
-
 use HTTP::Request;
 use WWW::Curl::UserAgent;
 
