@@ -518,6 +518,38 @@ been received and handler have been processed.
 
 =back
 
+=head1 BENCHMARK
+
+A test with the tools/benchmark.pl script against loadbalanced webserver
+performing a get requests to a simple echo API on an Intel i5 M 520 with
+Fedora 18 gave the following results:
+
+    500 requests (sequentially, 500 iterations):
+    +--------------------------+-----------+------+------+------------+------------+
+    |        User Agent        | Wallclock |  CPU |  CPU |  Requests  | Iterations |
+    |                          |  seconds  |  usr |  sys | per second | per second |
+    +--------------------------+-----------+------+------+------------+------------+
+    | LWP::Parallel::UserAgent |    14     | 0.91 | 0.30 |    35.7    |    413.2   |
+    +--------------------------+-----------+------+------+------------+------------+
+    | LWP::UserAgent           |    15     | 1.00 | 0.30 |    33.3    |    384.6   |
+    +--------------------------+-----------+------+------+------------+------------+
+    | WWW::Curl::Simple        |    15     | 0.68 | 0.35 |    33.3    |    485.4   |
+    +--------------------------+-----------+------+------+------------+------------+
+    | WWW::Curl::UserAgent     |     8     | 0.52 | 0.06 |    62.5    |    862.1   |
+    +--------------------------+-----------+------+------+------------+------------+
+
+    500 requests (5 in parallel, 100 iterations):
+    +--------------------------+-----------+-------+-------+------------+------------+
+    |        User Agent        | Wallclock |  CPU  |  CPU  |  Requests  | Iterations |
+    |                          |  seconds  |  usr  |  sys  | per second | per second |
+    +--------------------------+-----------+-------+-------+------------+------------+
+    | LWP::Parallel::UserAgent |      9    |  1.37 |  0.34 |     55.6   |     58.5   |
+    +--------------------------+-----------+-------+-------+------------+------------+
+    | WWW::Curl::Simple        |    135    | 57.61 | 19.85 |      3.7   |      1.3   |
+    +--------------------------+-----------+-------+-------+------------+------------+
+    | WWW::Curl::UserAgent     |      2    |  0.40 |  0.09 |    250.0   |    204.1   |
+    +--------------------------+-----------+-------+-------+------------+------------+
+
 =head1 SEE ALSO
 
 See L<HTTP::Request> and L<HTTP::Response> for a description of the
