@@ -323,7 +323,7 @@ DELETE.
 There is a simpler interface too, which just returns a C<HTTP::Response> for a
 given C<HTTP::Request>, named request(). The normal approach to use this
 library is to add as many requests with callbacks as your code allows to do and
-run C<perform> afterwards. Then the callbacks will be excecuted sequentially
+run C<perform> afterwards. Then the callbacks will be executed sequentially
 when the responses arrive beginning with the first received response. The
 simple method request() does not support this of course, because there are no
 callbacks defined.
