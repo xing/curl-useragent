@@ -214,7 +214,7 @@ sub _perform_callbacks {
         my $curl_easy = $request->curl_easy;
 
         if ( $return_code == 0 ) {
-            my $response = $self->_build_http_response( ${ $request->header_ref }, ${ $request->content_ref } );
+            my $response = $self->_build_http_response( ${ $request->header_ref }, ${ $request->content_ref }, $curl_easy );
             $handler->on_success->( $request->http_request, $response, $curl_easy );
         }
         else {
@@ -258,11 +258,21 @@ sub _build_http_response {
     my $self    = shift;
     my $header  = shift;
     my $content = shift;
+    my $curl_easy = shift;
 
     # PUT requests may contain continue header
     my @header = split "\r\n\r\n", $header;
 
     my $response = HTTP::Response->parse($header[-1]);
+
+    if( $curl_easy &&
+        ( my $effective_url = $curl_easy->getinfo( CURLINFO_EFFECTIVE_URL ))){
+        unless( $response->base() ){
+            # This will cause base to be set.
+            $response->header('Base' => $effective_url);
+        }
+    }
+
     $response->content($content) if defined $content;
 
     # message might include a bad char

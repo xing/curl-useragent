@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-use Test::More tests => 25;
+use Test::More tests => 30;
 
 use HTTP::Request;
 use Sub::Override;
@@ -112,6 +112,16 @@ EOF
 {
     note 'build default http response';
 
+    my $curl_easy = Test::MockObject->new();
+    # Mock getinfo so it returns http://www.example.
+    $curl_easy->mock('getinfo', sub{
+                       my ($self, $info_key) = @_;
+                       if( $info_key == CURLINFO_EFFECTIVE_URL ){
+                         return 'http://www.example.com';
+                       }
+                       die "Un-mocked info key ".$info_key;
+                     });
+    
     my $http_response_header = <<EOF;
 HTTP/1.1 200 OK\r
 Content-Length: 12\r
@@ -120,10 +130,30 @@ Content-Type: text/plain\r
 EOF
     my $http_response_body = 'some content';
     
+    my $response = WWW::Curl::UserAgent->_build_http_response($http_response_header, $http_response_body, $curl_easy);
+    is $response->code, 200;
+    is $response->message, 'OK';
+    is $response->content, $http_response_body;
+    is $response->base, 'http://www.example.com';
+}
+
+{
+  note 'default http response with Content-Base';
+  my $http_response_header = <<EOF;
+HTTP/1.1 200 OK\r
+Content-Length: 12\r
+Content-Type: text/plain\r
+Content-Base: http://www.example.com\r
+\r
+EOF
+    my $http_response_body = 'some content';
+    
     my $response = WWW::Curl::UserAgent->_build_http_response($http_response_header, $http_response_body);
     is $response->code, 200;
     is $response->message, 'OK';
     is $response->content, $http_response_body;
+    is $response->base, 'http://www.example.com';
+  
 }
 
 {
