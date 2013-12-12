@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-use Test::More tests => 25;
+use Test::More tests => 29;
 
 use HTTP::Request;
 use Sub::Override;
@@ -124,6 +124,25 @@ EOF
     is $response->code, 200;
     is $response->message, 'OK';
     is $response->content, $http_response_body;
+}
+
+{
+  note 'default http response with Content-Base';
+  my $http_response_header = <<EOF;
+HTTP/1.1 200 OK\r
+Content-Length: 12\r
+Content-Type: text/plain\r
+Content-Base: http://www.example.com\r
+\r
+EOF
+    my $http_response_body = 'some content';
+    
+    my $response = WWW::Curl::UserAgent->_build_http_response($http_response_header, $http_response_body);
+    is $response->code, 200;
+    is $response->message, 'OK';
+    is $response->content, $http_response_body;
+    is $response->base, 'http://www.example.com';
+  
 }
 
 {

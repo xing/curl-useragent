@@ -7,6 +7,7 @@ use v5.10;
 
 use WWW::Curl::Easy;
 use WWW::Curl::Multi;
+use HTTP::Request;
 use HTTP::Response;
 use Time::HiRes;
 use IO::Select;
@@ -214,7 +215,22 @@ sub _perform_callbacks {
         my $curl_easy = $request->curl_easy;
 
         if ( $return_code == 0 ) {
-            my $response = $self->_build_http_response( ${ $request->header_ref }, ${ $request->content_ref } );
+
+            # Assume the final http request is the original one
+            my $final_http_request = $request->http_request();
+            my $effective_url = $curl_easy->getinfo( CURLINFO_EFFECTIVE_URL );
+            
+            # Handle redirection last effective Request so
+            # the response is always link to the last request in effect.
+            if( $effective_url && (  $final_http_request->uri().'' ne $effective_url ) ){
+                $final_http_request = HTTP::Request
+                    ->new($final_http_request->method,
+                          $effective_url,
+                          $final_http_request->headers(),
+                          $final_http_request->content());
+            }
+            
+            my $response = $self->_build_http_response( ${ $request->header_ref }, ${ $request->content_ref }, $final_http_request );
             $handler->on_success->( $request->http_request, $response, $curl_easy );
         }
         else {
@@ -258,11 +274,18 @@ sub _build_http_response {
     my $self    = shift;
     my $header  = shift;
     my $content = shift;
+    my $final_http_request = shift;
 
     # PUT requests may contain continue header
     my @header = split "\r\n\r\n", $header;
 
     my $response = HTTP::Response->parse($header[-1]);
+
+    if( $final_http_request ){
+        # Inject this in the response to behave more like LWP::UserAgent
+        $response->request($final_http_request);
+    }
+
     $response->content($content) if defined $content;
 
     # message might include a bad char
