@@ -219,7 +219,7 @@ sub _perform_callbacks {
             # Assume the final http request is the original one
             my $final_http_request = $request->http_request();
             my $effective_url = $curl_easy->getinfo( CURLINFO_EFFECTIVE_URL );
-            
+
             # Handle redirection last effective Request so
             # the response is always link to the last request in effect.
             if( $effective_url && (  $final_http_request->uri().'' ne $effective_url ) ){
@@ -229,7 +229,7 @@ sub _perform_callbacks {
                           $final_http_request->headers(),
                           $final_http_request->content());
             }
-            
+
             my $response = $self->_build_http_response( ${ $request->header_ref }, ${ $request->content_ref }, $final_http_request );
             $handler->on_success->( $request->http_request, $response, $curl_easy );
         }
@@ -313,7 +313,7 @@ __END__
     );
 
     $ua->add_request(
-        request    => HTTP::Request->new( GET => 'http://search.cpan.org/'),
+        request    => HTTP::Request->new( GET => 'http://search.cpan.org/' ),
         on_success => sub {
             my ( $request, $response ) = @_;
             if ($response->is_success) {

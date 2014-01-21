@@ -1,3 +1,10 @@
+0.9.6
+    [ BUG FIXES ]
+    * returned request in callback handler uses correct base
+
+    [ DOCUMENTATION ]
+    * fix typo
+
 0.9.5
     [ BUG FIXES]
     * large puts results in hanging requests
