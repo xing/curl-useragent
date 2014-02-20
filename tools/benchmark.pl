@@ -5,8 +5,11 @@ use warnings;
 
 use Benchmark;
 use HTTP::Request;
+use LWP::Parallel;
 use LWP::Parallel::UserAgent;
 use LWP::UserAgent;
+use Mojolicious;
+use Mojo::UserAgent;
 use Text::Table;
 use WWW::Curl::Simple;
 use WWW::Curl::UserAgent;
@@ -16,6 +19,7 @@ my $request_count = $ARGV[1] || 1_000;
 
 my $lwp_parallel_useragent = LWP::Parallel::UserAgent->new;
 my $lwp_useragent          = LWP::UserAgent->new;
+my $mojo_useragent         = Mojo::UserAgent->new;
 my $www_curl_simple        = WWW::Curl::Simple->new;
 my $www_curl_useragent     = WWW::Curl::UserAgent->new;
 
@@ -26,6 +30,10 @@ sub lwp_parallel_useragent_single {
 
 sub lwp_useragent_single {
     $lwp_useragent->get($url);
+}
+
+sub mojo_useragent_single {
+    $mojo_useragent->get($url);
 }
 
 sub www_curl_simple_single {
@@ -41,6 +49,12 @@ sub lwp_parallel_useragent_multi {
     $lwp_parallel_useragent->register( HTTP::Request->new( GET => $url ) )
       for ( 1 .. 5 );
     $lwp_parallel_useragent->wait;
+}
+
+sub mojo_useragent_multi {
+    my $delay = Mojo::IOLoop->delay;
+    $mojo_useragent->get($url => sub {}) for ( 1.. 5 );
+    $delay->wait;
 }
 
 sub www_curl_simple_multi {
@@ -123,10 +137,11 @@ print_request_results(
     Benchmark::timethese(
         $request_count,
         {
-            'LWP::Parallel::UserAgent' => \&lwp_parallel_useragent_single,
-            'LWP::UserAgent'           => \&lwp_useragent_single,
-            'WWW::Curl::Simple'        => \&www_curl_simple_single,
-            'WWW::Curl::UserAgent'     => \&www_curl_useragent_single,
+            "LWP::Parallel::UserAgent $LWP::Parallel::VERSION"    => \&lwp_parallel_useragent_single,
+            "LWP::UserAgent $LWP::UserAgent::VERSION"             => \&lwp_useragent_single,
+            "Mojo::UserAgent $Mojolicious::VERSION"               => \&mojo_useragent_single,
+            "WWW::Curl::Simple $WWW::Curl::Simple::VERSION"       => \&www_curl_simple_single,
+            "WWW::Curl::UserAgent $WWW::Curl::UserAgent::VERSION" => \&www_curl_useragent_single,
         },
         'none'
     ),
@@ -138,9 +153,10 @@ print_request_results(
     Benchmark::timethese(
         int( $request_count / 5 ),
         {
-            'LWP::Parallel::UserAgent' => \&lwp_parallel_useragent_multi,
-            'WWW::Curl::Simple'        => \&www_curl_simple_multi,
-            'WWW::Curl::UserAgent'     => \&www_curl_useragent_multi,
+            "LWP::Parallel::UserAgent $LWP::Parallel::VERSION"    => \&lwp_parallel_useragent_multi,
+            "Mojo::UserAgent $Mojolicious::VERSION"               => \&mojo_useragent_multi,
+            "WWW::Curl::Simple $WWW::Curl::Simple::VERSION"       => \&www_curl_simple_multi,
+            "WWW::Curl::UserAgent $WWW::Curl::UserAgent::VERSION" => \&www_curl_useragent_multi,
         },
         'none'
     ),
