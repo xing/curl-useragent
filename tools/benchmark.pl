@@ -53,7 +53,10 @@ sub lwp_parallel_useragent_multi {
 
 sub mojo_useragent_multi {
     my $delay = Mojo::IOLoop->delay;
-    $mojo_useragent->get($url => sub {}) for ( 1.. 5 );
+    for (1 .. 5) {
+        my $end = $delay->begin;
+        $mojo_useragent->get($url => sub { $end->() });
+    }
     $delay->wait;
 }
 
