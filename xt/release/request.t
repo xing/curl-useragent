@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib", "$FindBin::Bin/../lib", "$FindBin::Bin/../../lib";
 
-use Test::More tests => 24;
+use Test::More tests => 29;
 
 use HTTP::Request;
 use Test::Webserver;

@@ -29,7 +29,7 @@ my $ua = WWW::Curl::UserAgent->new(
   my $resp = $ua->request($req);
   ok( $resp->is_success() , "Response is a success");
   ok( $resp->request() , "Got request from response");
-  is( $resp->base()  , 'http://www.example.com' );
+  is( $resp->base()  , 'http://www.example.com/' );
 }
 
 {
