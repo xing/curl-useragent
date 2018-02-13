@@ -1,3 +1,7 @@
+0.9.7
+    [ BUG FIXES ]
+    * add PATCH capability
+
     [ DOCUMENTATION ]
     * add benchmarks for Mojo::UserAgent
 
