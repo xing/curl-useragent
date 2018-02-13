@@ -51,6 +51,16 @@ BEGIN {
 }
 
 {
+    note 'PATCH request';
+
+    my %curlopt = request( HTTP::Request->new( PATCH => 'dummy', [], 'content' ) );
+
+    is $curlopt{WWW::Curl::Easy::CURLOPT_HTTPGET}, undef, 'no GET request';
+    is $curlopt{WWW::Curl::Easy::CURLOPT_UPLOAD},  1,     'PATCH request';
+    is $curlopt{WWW::Curl::Easy::CURLOPT_INFILESIZE}, length 'content', 'content length';
+}
+
+{
     note 'POST request';
 
     my %curlopt = request( HTTP::Request->new( POST => 'dummy', [], 'content' ) );
