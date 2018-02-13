@@ -94,6 +94,15 @@ sub _build_curl_easy {
         $easy->setopt( CURLOPT_READFUNCTION,  \&_read_callback );
         $easy->setopt( CURLOPT_WRITEFUNCTION, \&_chunk_callback );
     }
+    elsif ( $request->method eq 'PATCH' ) {
+        use bytes;
+        my $content = $request->content;
+        $easy->setopt( CURLOPT_UPLOAD,        1 );
+        $easy->setopt( CURLOPT_INFILE,        \$content );
+        $easy->setopt( CURLOPT_INFILESIZE,    length $content );
+        $easy->setopt( CURLOPT_READFUNCTION,  \&_read_callback );
+        $easy->setopt( CURLOPT_WRITEFUNCTION, \&_chunk_callback );
+    }
     elsif ( $request->method eq 'HEAD' ) {
         $easy->setopt( CURLOPT_NOBODY, 1 );
     }

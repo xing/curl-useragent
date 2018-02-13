@@ -20,7 +20,7 @@ my $base_url = 'http://localhost:3000';
 
     my $ua = WWW::Curl::UserAgent->new;
 
-    foreach my $method (qw/GET HEAD PUT POST DELETE/) {
+    foreach my $method (qw/GET HEAD PUT PATCH POST DELETE/) {
         my $res =
           $ua->request( HTTP::Request->new( $method => "$base_url/code/204" ) );
         ok $res->is_success, "$method request";
@@ -32,7 +32,7 @@ my $base_url = 'http://localhost:3000';
 
     my $ua = WWW::Curl::UserAgent->new;
 
-    foreach my $method (qw/GET HEAD PUT POST DELETE/) {
+    foreach my $method (qw/GET HEAD PUT PATCH POST DELETE/) {
         $ua->add_request(
             request    => HTTP::Request->new( $method => "$base_url/code/204" ),
             on_success => sub {
@@ -120,6 +120,25 @@ my $base_url = 'http://localhost:3000';
     my $res = $ua->request($request);
 
     ok $res->is_success, "PUT request";
+    is $res->content, $content_md5;
+}
+
+{
+    note 'patch with large body';
+
+    my $content = '';
+    for (my $i = 0; $i < 20_000; $i++) {
+        $content .= int(rand(10));
+    }
+    my $content_md5 = md5_hex($content);
+
+    my $request = HTTP::Request->new( PATCH => "$base_url/content_md5" );
+    $request->content($content);
+
+    my $ua = WWW::Curl::UserAgent->new;
+    my $res = $ua->request($request);
+
+    ok $res->is_success, "PATCH request";
     is $res->content, $content_md5;
 }
 
