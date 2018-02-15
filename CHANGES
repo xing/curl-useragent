@@ -1,3 +1,10 @@
+0.9.8
+    [ BUG FIXES ]
+    * fix HTTP verb on PATCH requests
+
+    [ ENHANCEMENTS ]
+    * Support MetaJSON
+
 0.9.7
     [ BUG FIXES ]
     * add PATCH capability
