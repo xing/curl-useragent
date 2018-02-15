@@ -102,6 +102,7 @@ sub _build_curl_easy {
         $easy->setopt( CURLOPT_INFILESIZE,    length $content );
         $easy->setopt( CURLOPT_READFUNCTION,  \&_read_callback );
         $easy->setopt( CURLOPT_WRITEFUNCTION, \&_chunk_callback );
+        $easy->setopt( CURLOPT_CUSTOMREQUEST, uc 'PATCH' );
     }
     elsif ( $request->method eq 'HEAD' ) {
         $easy->setopt( CURLOPT_NOBODY, 1 );
